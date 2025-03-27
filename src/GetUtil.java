@@ -33,11 +33,7 @@ public class GetUtil {
                     String fieldName = matcher.group(1);
                     int index = Integer.parseInt(matcher.group(2));
 
-                    f = object.getClass().getDeclaredField(fieldName);
-                    boolean b = f.canAccess(object);
-                    if (!b) f.setAccessible(true);
-                    object = f.get(object);
-                    if (!b) f.setAccessible(false);
+                    object = getObject(object, fieldName);
 
                     if (object instanceof Object[] objArray) {
                         object = (index >= 0 && index < objArray.length) ? objArray[index] : null;
@@ -47,16 +43,24 @@ public class GetUtil {
                         return null;
                     }
                 } else {
-                    f = object.getClass().getDeclaredField(property);
-                    boolean b = f.canAccess(object);
-                    if (!b) f.setAccessible(true);
-                    object = f.get(object);
-                    if (!b) f.setAccessible(false);
+                    object = getObject(object, property);
                 }
             }
             return object;
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private static Object getObject(Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        if (object == null) return null;
+
+        Field f;
+        f = object.getClass().getDeclaredField(fieldName);
+        boolean b = f.canAccess(object);
+        if (!b) f.setAccessible(true);
+        object = f.get(object);
+        if (!b) f.setAccessible(false);
+        return object;
     }
 }

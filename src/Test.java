@@ -16,7 +16,7 @@ public class Test {
 
     public static class Inner3 {
         public Integer j1 = 789;
-        private Integer j2 = 456;
+        private Integer j2 = 786;
         Integer[] j3 = {6, 7, 8, 9};
     }
 
