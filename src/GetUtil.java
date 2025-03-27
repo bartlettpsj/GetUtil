@@ -1,39 +1,62 @@
 import java.lang.reflect.Field;
+import java.util.regex.*;
 
 public class GetUtil {
 
     /**
-     *
      * Meant to mimic the behavior of the Lodash get() function. (https://lodash.com/docs/4.15.0#get)
-     *
+     * <p>
      * Conventional Java 7 assignment of nested variable with null checking:
-     *
-     *  Object o = null;
-     *  if (a != null && a.b != null && a.b.c != null && a.b.c.d != null) {
-     *      o = a.b.c;
-     *  }
-     *  ...
-     *
+     * <p>
+     * Object o = null;
+     * if (a != null && a.b != null && a.b.c != null && a.b.c.d != null) {
+     * o = a.b.c;
+     * }
+     * ...
+     * <p>
      * With this method:
-     *  Object o = get(a, "b.c.d");
+     * Object o = get(a, "b.c[1].d");
      *
-     * Only considers paths in which all variables are public.
-     *
-     * @param object  object that contains indirect or direct reference to a variable we want to retrieve
-     * @param path  the path of the variable within the object
+     * @param object object that contains indirect or direct reference to a variable we want to retrieve
+     * @param path   the path of the variable within the object
      * @return
      */
     public static Object get(Object object, String path) {
         String[] arr = path.split("\\.");
-        for (String property : arr) {
-            Field f;
-            try {
-                f = object.getClass().getField(property);
-                object = f.get(object);
-            } catch (Exception e) {
-                return null;
+        Pattern arrayPattern = Pattern.compile("(\\w+)\\[(\\d+)\\]");
+
+        try {
+            for (String property : arr) {
+                Field f;
+                Matcher matcher = arrayPattern.matcher(property);
+                if (matcher.matches()) {
+                    String fieldName = matcher.group(1);
+                    int index = Integer.parseInt(matcher.group(2));
+
+                    f = object.getClass().getDeclaredField(fieldName);
+                    boolean b = f.canAccess(object);
+                    if (!b) f.setAccessible(true);
+                    object = f.get(object);
+                    if (!b) f.setAccessible(false);
+
+                    if (object instanceof Object[] objArray) {
+                        object = (index >= 0 && index < objArray.length) ? objArray[index] : null;
+                    } else if (object instanceof int[] intArray) {
+                        object = (index >= 0 && index < intArray.length) ? intArray[index] : null;
+                    } else {
+                        return null;
+                    }
+                } else {
+                    f = object.getClass().getDeclaredField(property);
+                    boolean b = f.canAccess(object);
+                    if (!b) f.setAccessible(true);
+                    object = f.get(object);
+                    if (!b) f.setAccessible(false);
+                }
             }
+            return object;
+        } catch (Exception e) {
+            return null;
         }
-        return object;
     }
 }
