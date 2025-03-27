@@ -15,7 +15,7 @@ public class GetUtil {
      * ...
      * <p>
      * With this method:
-     * Object o = get(a, "b.c[1].d");
+     * Object o = get(a, "b.c[1].d[0]");
      *
      * @param object object that contains indirect or direct reference to a variable we want to retrieve
      * @param path   the path of the variable within the object
@@ -27,7 +27,6 @@ public class GetUtil {
 
         try {
             for (String property : arr) {
-                Field f;
                 Matcher matcher = arrayPattern.matcher(property);
                 if (matcher.matches()) {
                     String fieldName = matcher.group(1);
@@ -55,8 +54,7 @@ public class GetUtil {
     private static Object getObject(Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         if (object == null) return null;
 
-        Field f;
-        f = object.getClass().getDeclaredField(fieldName);
+        Field f = object.getClass().getDeclaredField(fieldName);
         boolean b = f.canAccess(object);
         if (!b) f.setAccessible(true);
         object = f.get(object);

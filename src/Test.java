@@ -27,18 +27,23 @@ public class Test {
 
         Integer i = (Integer) GetUtil.get(inner1, "pub.i");
         System.out.printf("i is: %d\n", i);
+        assert i == 123;
 
         Integer i2 = (Integer) GetUtil.get(inner1, "priv.i2");
         System.out.printf("i2 is: %d\n", i2);
+        assert i2 == 456;
 
         Integer i3 = (Integer) GetUtil.get(inner1, "does.not.exist.i2");
         System.out.printf("i3 is: %d\n", i3);
+        assert i3 == null;
 
         Integer i4 = (Integer) GetUtil.get(inner1, "priv.i3[1]");
         System.out.printf("i4 is: %d\n", i4);
+        assert i4 == 2;
 
         Integer i5 = (Integer) GetUtil.get(inner1, "priv.inner3[1].j2");
         System.out.printf("i5 is: %d\n", i5);
+        assert i5 == 786;
 
 
     }
