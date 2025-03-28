@@ -1,7 +1,9 @@
+package com.iqss;
+
 import java.lang.reflect.Field;
 import java.util.regex.*;
 
-public class GetUtil {
+public class LodashGet {
 
     /**
      * Meant to mimic the behavior of the Lodash get() function. (https://lodash.com/docs/4.15.0#get)
@@ -51,6 +53,7 @@ public class GetUtil {
         }
     }
 
+    /** Helper method to retrieve a field value from an object. */
     private static Object getObject(Object object, String fieldName) throws NoSuchFieldException, IllegalAccessException {
         if (object == null) return null;
 
